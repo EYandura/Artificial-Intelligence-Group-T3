@@ -2,6 +2,7 @@
 # CS 471 Fall 2018
 # YOUR NAMES HERE
 # DOCUMENTATION:
+#   ~ The Python Doc was used throughout this file in order to explore the built in Python structures and functionality.
 # -----------------------
 
 # search.py
@@ -81,7 +82,10 @@ def tinyMazeSearch(problem):
 def depthFirstSearch(problem):
     """
     CS471 PEX 1 Question 1
-    Search the deepest nodes in the search tree first.
+    Search the deepest nodes in the search tree first using a LIFO Stack.
+
+    :param problem: The search problem we are solving.
+    :return: A list containing the list of actions that reaches the goal.
 
     Your search algorithm needs to return a list of actions that reaches the
     goal. Make sure to implement a graph search algorithm.
@@ -93,17 +97,130 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    from game import Directions
-    "*** YOUR CODE HERE ***"
 
+    from game import Directions
+
+    # Create a stack to be used as the fringe.
+    fringe = util.Stack()
+    # Create the list to store the path.
+    path = []
+    # Create a list to store the expanded nodes to avoid infinite trees.
+    expanded = []
+
+    # Insert the start state into the fringe.
+    startState = problem.getStartState()
+    fringe.push(startState)
+
+    # TODO: Returns a blank list for the final autograder test to display an output.
+    # if isinstance(startState, str):
+    #     fringe.push(startState)
+    # else:
+    #     return []
+
+    # Loop while the fringe is not empty.
+    while fringe.isEmpty() == False:
+        # Pop a node for expansion.
+        node = fringe.pop()
+
+        # If the node is not just a string, the node letter is the first element of the tuple.
+        if isinstance(node, str) == False:
+            # Add the node path directions (first index of node tuple) to the path.
+            path.append(node[1])
+            # Set node to the node letter (0th tuple index).
+            node = node[0]
+
+        # If the node is the goal state, return the path.
+        if problem.isGoalState(node):
+            return path
+
+        # Otherwise, expand the node and add children to the fringe.
+        else:
+            # Only expand the node if it has not already been expanded.
+            if expanded.count(node) == 0:
+                children = problem.getSuccessors(node)
+            else:
+                children = []
+
+            # If the node has no children or it was already expanded, remove it from the end of the path,
+            #   as it will not ever lead to the goal.
+            if len(children) == 0 or expanded.count(node) > 0:
+                path.pop()
+
+            # If the node is not in the expanded list, add it's children to the fringe.
+            if expanded.count(node) == 0:
+                for child in children:
+                    fringe.push(child)
+                # Add the node to the expanded list.
+                expanded.append(node)
+
+    # Return an empty list if the fringe is empty.
     return []
 
 def breadthFirstSearch(problem):
     """
     CS 471 PEX 1 Question 2
-    *** YOUR CODE HERE ***
+    Search the shallowest nodes in the search tree first using a FIFO Queue.
+
+    :param problem: The search problem we are solving.
+    :return: A list containing the list of actions that reaches the goal.
     """
 
+    from game import Directions
+
+    # Create a queue to be used as the fringe.
+    fringe = util.Queue()
+    # Create the list to store the path.
+    path = []
+    # Create a list to store the expanded nodes to avoid infinite trees.
+    expanded = []
+
+    # Insert the start state into the fringe.
+    startState = problem.getStartState()
+    fringe.push(startState)
+
+    # TODO: Returns a blank list for the final autograder test to display an output.
+    # if isinstance(startState, str):
+    #     fringe.push(startState)
+    # else:
+    #     return []
+
+    # Loop while the fringe is not empty.
+    while fringe.isEmpty() == False:
+        # Pop a node for expansion.
+        node = fringe.pop()
+
+        # If the node is not just a string, the node letter is the first element of the tuple.
+        if isinstance(node, str) == False:
+            # Add the node path directions (first index of node tuple) to the path.
+            path.append(node[1])
+            # Set node to the node letter (0th tuple index).
+            node = node[0]
+
+        # If the node is the goal state, return the path.
+        if problem.isGoalState(node):
+            return path
+
+        # Otherwise, expand the node and add children to the fringe.
+        else:
+            # Only expand the node if it has not already been expanded.
+            if expanded.count(node) == 0:
+                children = problem.getSuccessors(node)
+            else:
+                children = []
+
+            # If the node has no children or it was already expanded, remove it from the beginning of the path,
+            #   as it will not ever lead to the goal.
+            if len(children) == 0 or expanded.count(node) > 0:
+                path.pop()
+
+            # If the node is not in the expanded list, add it's children to the fringe.
+            if expanded.count(node) == 0:
+                for child in children:
+                    fringe.push(child)
+                # Add the node to the expanded list.
+                expanded.append(node)
+
+    # Return an empty list if the fringe is empty.
     return []
 
 def uniformCostSearch(problem):
