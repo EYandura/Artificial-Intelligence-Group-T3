@@ -240,19 +240,146 @@ def uniformCostSearch(problem):
     return []
 
 def nullHeuristic(state, problem=None):
-    """
-    A heuristic function estimates the cost from the current state to the nearest
-    goal in the provided SearchProblem.  This heuristic is trivial.
-    """
+    "The Manhattan distance heuristic for a PositionSearchProblem"
     return 0
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """
     CS 471 PEX 1 Question 4
     *** YOUR CODE HERE ***
     """
-	
-    return []
+
+    from game import Directions
+
+    ## Create a queue to be used as the fringe.
+    # fringe = util.Queue()
+    # startState = problem.getStartState()
+    # fringe.push(startState)
+    # # Create the list to store the path.
+    # path = []
+    # cost_so_far = 0
+    # # Create a list to store the expanded nodes to avoid infinite trees.
+    # expanded = []
+    # while not fringe.isEmpty():
+    #     current_node = fringe.pop()
+    #     # If the node is not just a string, the node letter is the first element of the tuple.
+    #     if isinstance(current_node, str) == False:
+    #         # Add the node path directions (first index of node tuple) to the path.
+    #         # ///////////////////////////////////////////////////////////////////path.append(current_node[1])
+    #         # Set node to the node letter (0th tuple index).
+    #         current_node = current_node[0]
+    #     #if you reached the goal then return the path
+    #     if problem.isGoalState(current_node):
+    #         return path
+    #     else:
+    #         if expanded.count(current_node) == 0:
+    #             neighbors = problem.getSuccessors(current_node)
+    #         else:
+    #             neighbors = []
+    #             current_node = fringe.pop()
+    #         if len(neighbors) == 0 and expanded.count(current_node) > 0:
+    #             path.pop()
+    #         # If the node is not in the expanded list, add it's children to the fringe.
+    #         if current_node not in expanded:
+    #             for child in neighbors:
+    #                 fringe.push(child)
+    #             # Add the node to the expanded list.
+    #             expanded.append(current_node)
+    #     for next in neighbors:
+    #         new_cost = cost_so_far + next[2]
+    #         if next[0] not in expanded or new_cost < cost_so_far:
+    #             if new_cost < cost_so_far:
+    #                 path.pop()
+    #             cost_so_far = new_cost
+    #             expanded.append(next[0])
+    #             path.append(next[1])
+    #             current_node = next[0]
+    #     # If the node is not in the expanded list, add it's children to the fringe.
+    #     # if expanded.count(current_node) == 0:
+    #     for child in current_node:
+    #         fringe.push(child)
+    #         # Add the node to the expanded list.
+    #     expanded.append(current_node)
+    #
+    # return path
+
+    start = problem.getStartState()
+
+    fringe = util.Queue()
+    fringe.push(start)
+    cost_so_far = 0
+    path = []
+    visited = []
+    current_neighbors = []
+    current = start
+
+
+    while not fringe.isEmpty():
+        # visited.append(current)
+        cost_plus_heuristic = cost_so_far + nullHeuristic(current)
+        if isinstance(current, str) == False:
+            # Add the node path directions (first index of node tuple) to the path.
+            # ///////////////////////////////////////////////////////////////////path.append(current_node[1])
+            # Set node to the node letter (0th tuple index).
+            current = current[0]
+        current_neighbors = problem.getSuccessors(current)
+        fringe.pop()
+
+        if problem.isGoalState(current):
+            return path
+
+        if isinstance(current, str) == False:
+            # Add the node path directions (first index of node tuple) to the path.
+            # ///////////////////////////////////////////////////////////////////path.append(current_node[1])
+            # Set node to the node letter (0th tuple index).
+            current = current[0]
+
+        # if you already visited the current node then you move to the next fringe node
+        if visited.count(current) == 0:
+            #current_neighbors = problem.getSuccessors(current)
+
+            lowest_cost = 99999999
+            index = 0
+            number_of_children = len(current_neighbors)
+            visited.append(current)
+            for next in current_neighbors:
+                index = index + 1
+                if next[0] not in visited:
+                    test_cost = next[2] + nullHeuristic(next)
+                if test_cost < lowest_cost:
+                    lowest = next
+                    lowest_cost = test_cost
+                if index == number_of_children:
+                    if lowest[0] not in visited or lowest_cost < cost_plus_heuristic:
+                        cost_so_far = lowest_cost
+                        path.append(lowest[1])
+                        # visited.append(next[0])
+                        current = lowest[0]
+                        for each in problem.getSuccessors(current[0]):
+                            if each[0] not in visited:
+                                fringe.push(each)
+
+        else:
+            if not fringe.isEmpty():
+                fringe.pop()
+
+    return path
+
+
+
+    #
+    # # Create a list to store the expanded nodes to avoid infinite trees.
+    # expanded = []
+    #
+    # # Insert the start state into the fringe.
+    #
+    #
+    #
+    #
+    #
+    #
+    # return []
 
 
 
