@@ -133,25 +133,23 @@ def depthFirstSearch(problem):
         if problem.isGoalState(node):
             return path
 
-        # Otherwise, expand the node and add children to the fringe.
+        # Only expand the node if it has not already been expanded.
+        if expanded.count(node) == 0:
+            children = problem.getSuccessors(node)
         else:
-            # Only expand the node if it has not already been expanded.
-            if expanded.count(node) == 0:
-                children = problem.getSuccessors(node)
-            else:
-                children = []
+            children = []
 
-            # If the node has no children or it was already expanded, remove it from the end of the path,
-            #   as it will not ever lead to the goal.
-            if len(children) == 0 or expanded.count(node) > 0:
-                path.pop()
+        # If the node has no children or it was already expanded, remove it from the end of the path,
+        #   as it will not ever lead to the goal.
+        if len(children) == 0 or expanded.count(node) > 0:
+            path.pop()
 
-            # If the node is not in the expanded list, add it's children to the fringe.
-            if expanded.count(node) == 0:
-                for child in children:
-                    fringe.push(child)
-                # Add the node to the expanded list.
-                expanded.append(node)
+        # If the node is not in the expanded list, add it's children to the fringe.
+        if expanded.count(node) == 0:
+            for child in children:
+                fringe.push(child)
+            # Add the node to the expanded list.
+            expanded.append(node)
 
     # Return an empty list if the fringe is empty.
     return []
@@ -200,25 +198,23 @@ def breadthFirstSearch(problem):
         if problem.isGoalState(node):
             return path
 
-        # Otherwise, expand the node and add children to the fringe.
+        # Only expand the node if it has not already been expanded.
+        if expanded.count(node) == 0:
+            children = problem.getSuccessors(node)
         else:
-            # Only expand the node if it has not already been expanded.
-            if expanded.count(node) == 0:
-                children = problem.getSuccessors(node)
-            else:
-                children = []
+            children = []
 
-            # If the node has no children or it was already expanded, remove it from the beginning of the path,
-            #   as it will not ever lead to the goal.
-            if len(children) == 0 or expanded.count(node) > 0:
-                path.pop()
+        # If the node has no children or it was already expanded, remove it from the beginning of the path,
+        #   as it will not ever lead to the goal.
+        if len(children) == 0 or expanded.count(node) > 0:
+            path.pop()
 
-            # If the node is not in the expanded list, add it's children to the fringe.
-            if expanded.count(node) == 0:
-                for child in children:
-                    fringe.push(child)
-                # Add the node to the expanded list.
-                expanded.append(node)
+        # If the node is not in the expanded list, add it's children to the fringe.
+        if expanded.count(node) == 0:
+            for child in children:
+                fringe.push(child)
+            # Add the node to the expanded list.
+            expanded.append(node)
 
     # Return an empty list if the fringe is empty.
     return []
@@ -226,9 +222,66 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """
     CS 471 PEX 1 Question 3
-    *** YOUR CODE HERE ***
+    Search the lowest cost nodes in the search tree first using a Priority Queue.
+
+    :param problem: The search problem we are solving.
+    :return: A list containing the list of actions that reaches the goal.
     """
 
+    from game import Directions
+
+    # Create a priority queue to be used as the fringe.
+    fringe = util.PriorityQueue()
+    # Create the list to store the path.
+    path = []
+    # Create a list to store the expanded nodes to avoid infinite trees.
+    expanded = []
+
+    # Insert the start state into the fringe; the startState has a priority cost of 0.
+    startState = problem.getStartState()
+    fringe.push(startState, 0)
+
+    # TODO: Returns a blank list for the final autograder test to display an output.
+    # if isinstance(startState, str):
+    #     fringe.push(startState)
+    # else:
+    #     return []
+
+    # Loop while the fringe is not empty.
+    while fringe.isEmpty() == False:
+        # Pop a node for expansion.
+        node = fringe.pop()
+
+        # If the node is not just a string, the node letter is the first element of the tuple.
+        if isinstance(node, str) == False:
+            # Add the node path directions (first index of node tuple) to the path.
+            path.append(node[1])
+            # Set node to the node letter (0th tuple index).
+            node = node[0]
+
+        # If the node is the goal state, return the path.
+        if problem.isGoalState(node):
+            return path
+
+        # Only expand the node if it has not already been expanded.
+        if expanded.count(node) == 0:
+            children = problem.getSuccessors(node)
+        else:
+            children = []
+
+        # If the node has no children or it was already expanded, remove it from the beginning of the path,
+        #   as it will not ever lead to the goal.
+        if len(children) == 0 or expanded.count(node) > 0:
+            path.pop()
+
+        # If the node is not in the expanded list, add it's children to the fringe.
+        if expanded.count(node) == 0:
+            for child in children:
+                fringe.push(child, child[2])  # The priority cost is the third tuple element.
+            # Add the node to the expanded list.
+            expanded.append(node)
+
+    # Return an empty list if the fringe is empty.
     return []
 
 def nullHeuristic(state, problem=None):
