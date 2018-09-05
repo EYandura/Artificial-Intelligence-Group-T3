@@ -1,6 +1,6 @@
 # ------------------------
 # CS 471 Fall 2018
-# YOUR NAMES HERE
+# C1C Reece Clingenpeel, C1C Eric Yandura
 # DOCUMENTATION:
 # -----------------------
 
@@ -303,15 +303,22 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # Return the position of pacman and the position of food only in the form (startingPosition, [corners]).
+        return self.startingPosition, self.corners
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # A goal state is defined as all four corners without food, or an empty corners list.
+        cornersLst = list(state[1])
+
+        if len(cornersLst) == 0:
+            return True
+        else:
+            return False
 
     def getSuccessors(self, state):
         """

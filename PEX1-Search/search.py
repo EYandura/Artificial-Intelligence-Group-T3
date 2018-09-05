@@ -1,8 +1,9 @@
 # ------------------------
 # CS 471 Fall 2018
-# YOUR NAMES HERE
+# C1C Reece Clingenpeel, C1C Eric Yandura
 # DOCUMENTATION:
 #   ~ The Python Doc was used throughout this file in order to explore the built in Python structures and functionality.
+#   ~ C1C Curran Brandt helped me to conceptually understand the general method for implementing the DFS.
 # -----------------------
 
 # search.py
