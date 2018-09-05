@@ -102,54 +102,39 @@ def depthFirstSearch(problem):
 
     # Create a stack to be used as the fringe.
     fringe = util.Stack()
-    # Create the list to store the path.
-    path = []
     # Create a list to store the expanded nodes to avoid infinite trees.
     expanded = []
 
-    # Insert the start state into the fringe.
+    # Insert the start state into the fringe as a node in the form (currentState, [path])
     startState = problem.getStartState()
-    fringe.push(startState)
-
-    # TODO: Returns a blank list for the final autograder test to display an output.
-    # if isinstance(startState, str):
-    #     fringe.push(startState)
-    # else:
-    #     return []
+    fringe.push((startState, []))
 
     # Loop while the fringe is not empty.
     while fringe.isEmpty() == False:
-        # Pop a node for expansion.
+        # Pop the first node from the fringe.
         node = fringe.pop()
 
-        # If the node is not just a string, the node letter is the first element of the tuple.
-        if isinstance(node, str) == False:
-            # Add the node path directions (first index of node tuple) to the path.
-            path.append(node[1])
-            # Set node to the node letter (0th tuple index).
-            node = node[0]
+        # Variables for ease of reading.
+        currentState = node[0]
+        path = node[1]
 
-        # If the node is the goal state, return the path.
-        if problem.isGoalState(node):
+        # If the currentState is a goal node, return the path of that node.
+        if problem.isGoalState(currentState):
             return path
 
-        # Only expand the node if it has not already been expanded.
-        if expanded.count(node) == 0:
-            children = problem.getSuccessors(node)
-        else:
-            children = []
+        # If the current node is not in expanded. add the currentState to expanded and expand the node.
+        if expanded.count(currentState) == 0:
+            # Add the currentState to expanded and expand the node into children.
+            expanded.append(currentState)
+            children = problem.getSuccessors(currentState)
 
-        # If the node has no children or it was already expanded, remove it from the end of the path,
-        #   as it will not ever lead to the goal.
-        if len(children) == 0 or expanded.count(node) > 0:
-            path.pop()
-
-        # If the node is not in the expanded list, add it's children to the fringe.
-        if expanded.count(node) == 0:
+            # Push each child into the fringe as a node.
+            # The path is the current path with the second element of the child tuple appended to it.
             for child in children:
-                fringe.push(child)
-            # Add the node to the expanded list.
-            expanded.append(node)
+                newState = child[0]
+                newPath = path + [child[1]]
+
+                fringe.push((newState, newPath))
 
     # Return an empty list if the fringe is empty.
     return []
@@ -167,54 +152,39 @@ def breadthFirstSearch(problem):
 
     # Create a queue to be used as the fringe.
     fringe = util.Queue()
-    # Create the list to store the path.
-    path = []
     # Create a list to store the expanded nodes to avoid infinite trees.
     expanded = []
 
-    # Insert the start state into the fringe.
+    # Insert the start state into the fringe as a node in the form (currentState, [path])
     startState = problem.getStartState()
-    fringe.push(startState)
-
-    # TODO: Returns a blank list for the final autograder test to display an output.
-    # if isinstance(startState, str):
-    #     fringe.push(startState)
-    # else:
-    #     return []
+    fringe.push((startState, []))
 
     # Loop while the fringe is not empty.
     while fringe.isEmpty() == False:
-        # Pop a node for expansion.
+        # Pop the first node from the fringe.
         node = fringe.pop()
 
-        # If the node is not just a string, the node letter is the first element of the tuple.
-        if isinstance(node, str) == False:
-            # Add the node path directions (first index of node tuple) to the path.
-            path.append(node[1])
-            # Set node to the node letter (0th tuple index).
-            node = node[0]
+        # Variables for ease of reading.
+        currentState = node[0]
+        path = node[1]
 
-        # If the node is the goal state, return the path.
-        if problem.isGoalState(node):
+        # If the currentState is a goal node, return the path of that node.
+        if problem.isGoalState(currentState):
             return path
 
-        # Only expand the node if it has not already been expanded.
-        if expanded.count(node) == 0:
-            children = problem.getSuccessors(node)
-        else:
-            children = []
+        # If the current node is not in expanded. add the currentState to expanded and expand the node.
+        if expanded.count(currentState) == 0:
+            # Add the currentState to expanded and expand the node into children.
+            expanded.append(currentState)
+            children = problem.getSuccessors(currentState)
 
-        # If the node has no children or it was already expanded, remove it from the beginning of the path,
-        #   as it will not ever lead to the goal.
-        if len(children) == 0 or expanded.count(node) > 0:
-            path.pop()
-
-        # If the node is not in the expanded list, add it's children to the fringe.
-        if expanded.count(node) == 0:
+            # Push each child into the fringe as a node.
+            # The path is the current path with the second element of the child tuple appended to it.
             for child in children:
-                fringe.push(child)
-            # Add the node to the expanded list.
-            expanded.append(node)
+                newState = child[0]
+                newPath = path + [child[1]]
+
+                fringe.push((newState, newPath))
 
     # Return an empty list if the fringe is empty.
     return []
@@ -228,58 +198,42 @@ def uniformCostSearch(problem):
     :return: A list containing the list of actions that reaches the goal.
     """
 
-    from game import Directions
-
     # Create a priority queue to be used as the fringe.
     fringe = util.PriorityQueue()
-    # Create the list to store the path.
-    path = []
     # Create a list to store the expanded nodes to avoid infinite trees.
     expanded = []
 
-    # Insert the start state into the fringe; the startState has a priority cost of 0.
+    # Insert the start state into the fringe as a node in the form (currentState, [path])
     startState = problem.getStartState()
-    fringe.push(startState, 0)
-
-    # TODO: Returns a blank list for the final autograder test to display an output.
-    # if isinstance(startState, str):
-    #     fringe.push(startState)
-    # else:
-    #     return []
+    fringe.push((startState, []), 0)  # The cost of the start state is 0.
 
     # Loop while the fringe is not empty.
     while fringe.isEmpty() == False:
-        # Pop a node for expansion.
+        # Pop the first node from the fringe.
         node = fringe.pop()
 
-        # If the node is not just a string, the node letter is the first element of the tuple.
-        if isinstance(node, str) == False:
-            # Add the node path directions (first index of node tuple) to the path.
-            path.append(node[1])
-            # Set node to the node letter (0th tuple index).
-            node = node[0]
+        # Variables for ease of reading.
+        currentState = node[0]
+        path = node[1]
 
-        # If the node is the goal state, return the path.
-        if problem.isGoalState(node):
+        # If the currentState is a goal node, return the path of that node.
+        if problem.isGoalState(currentState):
             return path
 
-        # Only expand the node if it has not already been expanded.
-        if expanded.count(node) == 0:
-            children = problem.getSuccessors(node)
-        else:
-            children = []
+        # If the current node is not in expanded. add the currentState to expanded and expand the node.
+        if expanded.count(currentState) == 0:
+            # Add the currentState to expanded and expand the node into children.
+            expanded.append(currentState)
+            children = problem.getSuccessors(currentState)
 
-        # If the node has no children or it was already expanded, remove it from the beginning of the path,
-        #   as it will not ever lead to the goal.
-        if len(children) == 0 or expanded.count(node) > 0:
-            path.pop()
-
-        # If the node is not in the expanded list, add it's children to the fringe.
-        if expanded.count(node) == 0:
+            # Push each child into the fringe as a node.
+            # The path is the current path with the second element of the child tuple appended to it.
             for child in children:
-                fringe.push(child, child[2])  # The priority cost is the third tuple element.
-            # Add the node to the expanded list.
-            expanded.append(node)
+                newState = child[0]
+                newPath = path + [child[1]]
+                cost = child[2]
+
+                fringe.push((newState, newPath), cost)
 
     # Return an empty list if the fringe is empty.
     return []
