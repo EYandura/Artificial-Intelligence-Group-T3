@@ -215,7 +215,7 @@ def uniformCostSearch(problem):
 
     # Insert the start state into the fringe as a node in the form (currentState, [path])
     startState = problem.getStartState()
-    fringe.push((startState, []), 0)  # The totalCost of the start state is 0.
+    fringe.push((startState, [], 0), 0)  # The totalCost of the start state is 0.
 
     # Loop while the fringe is not empty.
     while fringe.isEmpty() == False:
@@ -241,9 +241,9 @@ def uniformCostSearch(problem):
             for child in children:
                 newState = child[0]
                 newPath = path + [child[1]]
-                cost = child[2]
+                cost = node[2] + child[2]
 
-                fringe.push((newState, newPath), cost)
+                fringe.push((newState, newPath, cost), cost) # backwards plus heuristic
 
     # Return an empty list if the fringe is empty.
     return []
@@ -264,13 +264,12 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     :param problem: The search problem we are solving.
     :return: A list containing the list of actions that reaches the goal.
     """
-
     # Create a priority queue to be used as the fringe.
     fringe = util.PriorityQueue()
     # Create a list to store the expanded nodes to avoid infinite trees.
     expanded = []
 
-    # Insert the start state into the fringe as a node in the form (currentState, [path], costSoFar)
+    # Insert the start state into the fringe as a node in the form (currentState, [path])
     startState = problem.getStartState()
     fringe.push((startState, [], 0), 0)  # The totalCost of the start state is 0.
 
@@ -282,7 +281,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         # Variables for ease of reading.
         currentState = node[0]
         path = node[1]
-        costSoFar = node[2]
 
         # If the currentState is a goal node, return the path of that node.
         if problem.isGoalState(currentState):
@@ -299,14 +297,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             for child in children:
                 newState = child[0]
                 newPath = path + [child[1]]
-                jumpCost = child[2]
-                costSoFar += jumpCost
-                cost = costSoFar + heuristic(problem, currentState)
+                cost = node[2] + child[2]
+                heuristic_cost = heuristic(child[0], problem) + cost
 
-                fringe.push((newState, newPath, costSoFar), cost)
+                fringe.push((newState, newPath, cost), heuristic_cost)  # backwards plus heuristic
 
-    # Return an empty list if the fringe is empty.
     return []
+
 
 
 # Abbreviations
