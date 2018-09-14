@@ -222,7 +222,7 @@ class PositionSearchProblem(search.SearchProblem):
         include an illegal move, return 999999.
         """
         if actions == None: return 999999
-        x,y= self.getStartState()
+        x, y = self.getStartState()
         cost = 0
         for action in actions:
             # Check figure out the next state and see whether its' legal
@@ -231,6 +231,7 @@ class PositionSearchProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
             cost += self.costFn((x,y))
         return cost
+
 
 class StayEastSearchAgent(SearchAgent):
     """
@@ -244,6 +245,7 @@ class StayEastSearchAgent(SearchAgent):
         costFn = lambda pos: .5 ** pos[0]
         self.searchType = lambda state: PositionSearchProblem(state, costFn, (1, 1), None, False)
 
+
 class StayWestSearchAgent(SearchAgent):
     """
     An agent for position search with a cost function that penalizes being in
@@ -256,11 +258,13 @@ class StayWestSearchAgent(SearchAgent):
         costFn = lambda pos: 2 ** pos[0]
         self.searchType = lambda state: PositionSearchProblem(state, costFn)
 
+
 def manhattanHeuristic(position, problem, info={}):
     "The Manhattan distance heuristic for a PositionSearchProblem"
     xy1 = position
     xy2 = problem.goal
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
 
 def euclideanHeuristic(position, problem, info={}):
     "The Euclidean distance heuristic for a PositionSearchProblem"
@@ -271,6 +275,7 @@ def euclideanHeuristic(position, problem, info={}):
 #####################################################
 # This portion is incomplete.  Time to write code!  #
 #####################################################
+
 
 class CornersProblem(search.SearchProblem):
     """
@@ -388,6 +393,7 @@ class AStarCornersAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, cornersHeuristic)
         self.searchType = CornersProblem
 
+
 class FoodSearchProblem:
     """
     A search problem associated with finding the a path that collects all of the
@@ -404,11 +410,14 @@ class FoodSearchProblem:
         self._expanded = 0 # DO NOT CHANGE
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
 
+
     def getStartState(self):
         return self.start
 
+
     def isGoalState(self, state):
         return state[1].count() == 0
+
 
     def getSuccessors(self, state):
         "Returns successor states, the actions they require, and a cost of 1."
@@ -424,6 +433,7 @@ class FoodSearchProblem:
                 successors.append( ( ((nextx, nexty), nextFood), direction, 1) )
         return successors
 
+
     def getCostOfActions(self, actions):
         """Returns the cost of a particular sequence of actions.  If those actions
         include an illegal move, return 999999"""
@@ -438,11 +448,13 @@ class FoodSearchProblem:
             cost += 1
         return cost
 
+
 class AStarFoodSearchAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
+
 
 def foodHeuristic(state, problem):
     """
@@ -550,6 +562,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
+
 
 def mazeDistance(point1, point2, gameState):
     """
