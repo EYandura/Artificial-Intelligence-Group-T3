@@ -300,40 +300,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           gameState.getNumAgents():
             Returns the total number of agents in the game
         """
-        "*** YOUR CODE HERE ***"
-        # TODO count to keep track of iteration and agent (each agent needs x iterations)
-        #
-        # def expectimax_search(state, agentIndex, depth):
-        #     # if in min layer and last ghost
-        #     if agentIndex == state.getNumAgents():
-        #         # if reached max depth, evaluate state
-        #         if depth == self.depth:
-        #             return self.evaluationFunction(state)
-        #         # otherwise start new max layer with bigger depth
-        #         else:
-        #             return expectimax_search(state, 0, depth + 1)
-        #     # if not min layer and last ghost
-        #     else:
-        #         moves = state.getLegalActions(agentIndex)
-        #         # if nothing can be done, evaluate the state
-        #         if len(moves) == 0:
-        #             return self.evaluationFunction(state)
-        #         # get all the minimax values for the next layer with each node being a possible state after a move
-        #         next = (expectimax_search(state.generateSuccessor(agentIndex, m), agentIndex + 1, depth) for m in moves)
-        #
-        #         # if max layer, return max of layer below
-        #         if agentIndex == 0:
-        #             return max(next)
-        #         # if min layer, return expectimax values
-        #         else:
-        #             l = list(next)
-        #             return sum(l) / len(l)
-        #
-        # # select the action with the greatest minimax value
-        # result = max(gameState.getLegalActions(0),
-        #              key=lambda x: expectimax_search(gameState.generateSuccessor(0, x), 1, 1))
-        #
-        # return result
+
 
         agentIndex = self.index
         depth = self.depth
