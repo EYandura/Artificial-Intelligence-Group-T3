@@ -166,7 +166,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         agentIndex = self.index
         depth = self.depth
 
-        return self.value(gameState, agentIndex, depth)
+        return self.value(gameState, agentIndex, depth)[1]
 
     def value(self, gameState, agentIndex, depth):
         """
@@ -177,11 +177,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         # If the current depth is 0, we have traversed the tree; return the value of the evaluation function.
         if depth == 0:
-            return self.evaluationFunction(gameState)
+            return (self.evaluationFunction(gameState), '')
 
         # If gameState is a terminal state (win or loss), return the value of the evaluation function.
         if gameState.isWin() or gameState.isLose():
-            return self.evaluationFunction(gameState)
+            return (self.evaluationFunction(gameState), '')
 
         # If the agent is Pacman (agentIndex == 0) find the max.
         if agentIndex == 0:
@@ -219,12 +219,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(agentIndex)
 
         # Loop the legal actions and find the max.
-        for action in actions:
-            # Successor of the current agent given action.
-            successor = gameState.generateSuccessor(agentIndex, action)
-            v = max(v, self.value(successor, nextAgentIndex, nextDepth))
+        for a in actions:
+            successor = gameState.generateSuccessor(agentIndex, a)
+            actionVal = self.value(successor, nextAgentIndex, nextDepth)
+            if actionVal[0] > v:
+                v = actionVal[0]
+                currentBestAction = a
 
-        return v
+        return (v, currentBestAction)
 
     def minValue(self, gameState, agentIndex, depth):
         """
@@ -253,13 +255,15 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         # Return a list of all the legal actions of the agent.
         actions = gameState.getLegalActions(agentIndex)
-
         # Loop the legal actions and find the min.
-        for action in actions:
-            successor = gameState.generateSuccessor(agentIndex, action)
-            v = min(v, self.value(successor, nextAgentIndex, nextDepth))
+        for a in actions:
+            successor = gameState.generateSuccessor(agentIndex, a)
+            actionVal = self.value(successor, nextAgentIndex, nextDepth)
+            if actionVal[0] < v:
+                v = actionVal[0]
+                currentBestAction = a
 
-        return v
+        return (v, currentBestAction)
         
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -281,12 +285,162 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState):
         """
-          Returns the expectimax action using self.depth and self.evaluationFunction
+          Returns the minimax action from the current gameState using self.depth
+          and self.evaluationFunction.
 
-          All ghosts should be modeled as choosing uniformly at random from their
-          legal moves.
+          Here are some method calls that might be useful when implementing minimax.
+
+          gameState.getLegalActions(agentIndex):
+            Returns a list of legal actions for an agent
+            agentIndex=0 means Pacman, ghosts are >= 1
+
+          gameState.generateSuccessor(agentIndex, action):
+            Returns the successor game state after an agent takes an action
+
+          gameState.getNumAgents():
+            Returns the total number of agents in the game
         """
-        util.raiseNotDefined()
+        "*** YOUR CODE HERE ***"
+        # TODO count to keep track of iteration and agent (each agent needs x iterations)
+        #
+        # def expectimax_search(state, agentIndex, depth):
+        #     # if in min layer and last ghost
+        #     if agentIndex == state.getNumAgents():
+        #         # if reached max depth, evaluate state
+        #         if depth == self.depth:
+        #             return self.evaluationFunction(state)
+        #         # otherwise start new max layer with bigger depth
+        #         else:
+        #             return expectimax_search(state, 0, depth + 1)
+        #     # if not min layer and last ghost
+        #     else:
+        #         moves = state.getLegalActions(agentIndex)
+        #         # if nothing can be done, evaluate the state
+        #         if len(moves) == 0:
+        #             return self.evaluationFunction(state)
+        #         # get all the minimax values for the next layer with each node being a possible state after a move
+        #         next = (expectimax_search(state.generateSuccessor(agentIndex, m), agentIndex + 1, depth) for m in moves)
+        #
+        #         # if max layer, return max of layer below
+        #         if agentIndex == 0:
+        #             return max(next)
+        #         # if min layer, return expectimax values
+        #         else:
+        #             l = list(next)
+        #             return sum(l) / len(l)
+        #
+        # # select the action with the greatest minimax value
+        # result = max(gameState.getLegalActions(0),
+        #              key=lambda x: expectimax_search(gameState.generateSuccessor(0, x), 1, 1))
+        #
+        # return result
+
+        agentIndex = self.index
+        depth = self.depth
+
+        return self.value(gameState, agentIndex, depth)[1]
+
+    def value(self, gameState, agentIndex, depth):
+        """
+        If the gameState is a terminal state, return it. Otherwise, find the min/max and return the minimax value.
+
+        :param gameState: The current state of the game.
+        :return: The minimax value at the state gameState.
+        """
+        # If the current depth is 0, we have traversed the tree; return the value of the evaluation function.
+        if depth == 0:
+            return (self.evaluationFunction(gameState), '')
+
+        # If gameState is a terminal state (win or loss), return the value of the evaluation function.
+        if gameState.isWin() or gameState.isLose():
+            return (self.evaluationFunction(gameState), '')
+
+        # If the agent is Pacman (agentIndex == 0) find the max.
+        if agentIndex == 0:
+            return self.maxValue(gameState, agentIndex, depth)
+        # Otherwise, the agent is a Ghost (agentIndex >= 1); find the expected.
+        elif agentIndex >= 1:
+            return self.expValue(gameState, agentIndex, depth)
+
+    def maxValue(self, gameState, agentIndex, depth):
+        """
+        Return the max value of the successors of gameState.
+
+        :param gameState: The current state of the game.
+        :return: The max value of gameState's successors.
+        """
+
+        # Initialize v to a min value.
+        v = -99999
+
+        # The number of agents in the game.
+        numAgents = gameState.getNumAgents()
+
+        # The nextAgentIndex will be agentIndex + 1 (mod numAgents) as we want to iterate each agent
+        # once for each level of depth.
+        nextAgentIndex = (agentIndex + 1) % numAgents
+
+        # If we are looking at the last agent in the game, decrement the depth by 1.
+        if agentIndex == numAgents - 1:
+            nextDepth = depth - 1
+        # Otherwise, the depth remains the same.
+        else:
+            nextDepth = depth
+
+        # Return a list of all the legal actions of the agent.
+        actions = gameState.getLegalActions(agentIndex)
+
+        # Loop the legal actions and find the max.
+        for a in actions:
+            successor = gameState.generateSuccessor(agentIndex, a)
+            actionVal = self.value(successor, nextAgentIndex, nextDepth)
+            if actionVal[0] > v:
+                v = actionVal[0]
+                currentBestAction = a
+
+        return (v, currentBestAction)
+
+    def expValue(self, gameState, agentIndex, depth):
+        """
+        Return the min value of the successors of gameState.
+
+        :param gameState: The current state of the game.
+        :return: The min value of gameState's successors.
+        """
+
+        # Initialize v to a max value.
+        v = 0
+
+        # The number of agents in the game.
+        numAgents = gameState.getNumAgents()
+
+        # The nextAgentIndex will be agentIndex + 1 (mod numAgents) as we want to iterate each agent
+        # once for each level of depth.
+        nextAgentIndex = (agentIndex + 1) % numAgents
+
+        # If we are looking at the last agent in the game, decrement the depth by 1.
+        if agentIndex == numAgents - 1:
+            nextDepth = depth - 1
+        # Otherwise, the depth remains the same.
+        else:
+            nextDepth = depth
+
+        # Return a list of all the legal actions of the agent.
+        actions = gameState.getLegalActions(agentIndex)
+        currentProbability = 0
+        # Loop the legal actions and find the min.
+        for a in actions:
+            successor = gameState.generateSuccessor(agentIndex, a)
+            actionVal = self.value(successor, nextAgentIndex, nextDepth)
+
+            # p = probability(actionVal[1])
+            # v += p * actionVal[0]
+
+            if v > currentProbability:
+                currentProbability = v
+                currentBestAction = a
+
+        return (currentProbability, currentBestAction)
 
 
 
