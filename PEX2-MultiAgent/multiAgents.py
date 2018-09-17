@@ -1,6 +1,6 @@
 # ##############################
 #
-# YOUR NAMES
+# Reece Clingenpeel, Eric Yandura
 #
 # DOCUMENTATION:
 # ~ The Python Doc was used throughout this file in order to explore the built in Python structures and functionality.
@@ -285,7 +285,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState):
         """
-          Returns the minimax action from the current gameState using self.depth
+          Returns the expectimax action from the current gameState using self.depth
           and self.evaluationFunction.
 
           Here are some method calls that might be useful when implementing minimax.
@@ -369,7 +369,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
     def expValue(self, gameState, agentIndex, depth):
         """
-        Return the min value of the successors of gameState.
+        Return the probable value of the successors of gameState.
 
         :param gameState: The current state of the game.
         :return: The min value of gameState's successors.
