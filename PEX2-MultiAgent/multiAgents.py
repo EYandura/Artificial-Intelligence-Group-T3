@@ -400,8 +400,9 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             successor = gameState.generateSuccessor(agentIndex, a)
             actionVal = self.value(successor, nextAgentIndex, nextDepth)
 
-            # p = probability(actionVal[1])
-            # v += p * actionVal[0]
+            # The probability of the move is 1/# of legal actions for the agent.
+            p = 1.0 / len(gameState.getLegalActions(agentIndex))
+            v += p * actionVal[0]
 
             if v > currentProbability:
                 currentProbability = v
