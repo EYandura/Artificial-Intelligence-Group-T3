@@ -5,6 +5,9 @@
 # DOCUMENTATION:
 # ~ The Python Doc was used throughout this file in order to explore the built in Python structures and functionality.
 # ~ The class text and Notes were used throughout the assignment.
+# I followed along with a similar problem online to better understand how to do number 1 (Eric Yandura) '
+# Did not just copy, once I already had my solution, it was used to help find errors
+# https://github.com/advaypakhale/Berkeley-AI-Pacman-Projects/blob/master/multiagent/multiAgents.py
 #
 # ###############################
 
