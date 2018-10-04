@@ -1,6 +1,6 @@
 #############################
 #
-# YOUR NAME HERE
+# Reece Clingenpeel, Eric Yandura
 #
 # DOCUMENTATION
 #
