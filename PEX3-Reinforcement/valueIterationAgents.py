@@ -2,7 +2,8 @@
 #
 # Reece Clingenpeel, Eric Yandura
 #
-# DOCUMENTATION
+# DOCUMENTATION:
+#   I used only the course text and notes to complete this assignment.
 #
 ##############################
 
