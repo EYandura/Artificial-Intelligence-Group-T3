@@ -6,6 +6,7 @@
 # https://pymotw.com/2/collections/counter.html
 # http://scikit-learn.org/stable/modules/feature_extraction.html
 # https://machinelearningmastery.com/feature-selection-machine-learning-python/
+# No other help recieved
 #
 ##############################
 
