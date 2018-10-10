@@ -77,7 +77,7 @@ class QLearningAgent(ReinforcementAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return a value of 0.0.
         """
-        "*** YOUR CODE HERE *** "
+        "*** YOUR CODE HERE ***  "
         # get all of the actions possible for the state and initialize max q to 0
         legalActions = self.getLegalActions(state)
         maximum_q = 0
