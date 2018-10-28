@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/PEX1-Search" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/PEX2-MultiAgent" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/PEX3-Reinforcement" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/PEX4-Inference" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (venv)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
