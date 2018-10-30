@@ -149,4 +149,5 @@ class GreedyBustersAgent(BustersAgent):
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
         "*** Q4 YOUR CODE HERE ***"
-        
+
+

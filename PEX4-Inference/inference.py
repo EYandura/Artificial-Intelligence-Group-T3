@@ -205,14 +205,14 @@ class InferenceModule:
         # Check if the ghost is in the jail position.
         if ghostPosition == jailPosition:
             # If the ghost is in the jail position, the distance returns None with probability 1.
-            if noisyDistance == None:
+            if noisyDistance is None:
                 return 1.0
             # Otherwise, everything else has a probability of 0.
             else:
                 return 0.0
 
         # If the ghost is not in the jail position and noisyDistance is 0, return 0.
-        if noisyDistance == None:
+        if noisyDistance is None:
             return 0.0
 
         # Calculate the manhattan distance and calculate the probability using this and the noisy distance.
@@ -334,9 +334,6 @@ class ExactInference(InferenceModule):
         jailPos = self.getJailPosition()
         allPositions = self.allPositions
 
-        # if observation == None:
-        #     distribution[self.getJailPosition()] = 1.0
-
         for position in allPositions:
             # Get the ObservationProb at the current position.
             obsProb = self.getObservationProb(observation, pacPos, position, jailPos)
@@ -434,10 +431,11 @@ class ParticleFilter(InferenceModule):
         pacmanPosition = gameState.getPacmanPosition()
         noisyDistance = observation
         dist = DiscreteDistribution()
+        jailPos = self.getJailPosition()
 
         for particle in self.particles:
             trueDistance = manhattanDistance(particle, pacmanPosition)
-            prob = busters.getObservationProbability(noisyDistance, trueDistance)
+            prob = self.getObservationProb(observation, pacmanPosition, particle, jailPos)
             dist[particle] += prob
 
         if dist.total() == 0:
@@ -448,6 +446,11 @@ class ParticleFilter(InferenceModule):
             dist.normalize()
             # update the beliefs to equal the distribution
             self.beliefs = dist
+
+            # Take a new sample for each particle.
+            for partIndex in range(self.numParticles):
+                sample = dist.sample()
+                self.particles[partIndex] = sample
 
 
     def elapseTime(self, gameState):
