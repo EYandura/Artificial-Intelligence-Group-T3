@@ -25,6 +25,7 @@ import itertools
 import random
 import busters
 import game
+import util
 
 from util import manhattanDistance
 
@@ -67,20 +68,7 @@ class DiscreteDistribution(dict):
         to 1. The ratio of values for all keys will remain the same. In the case
         where the total value of the distribution is 0, do nothing.
 
-        >>> dist = DiscreteDistribution()
-        >>> dist['a'] = 1
-        >>> dist['b'] = 2
-        >>> dist['c'] = 2
-        >>> dist['d'] = 0
-        >>> dist.normalize()
-        >>> list(sorted(dist.items()))
-        [('a', 0.2), ('b', 0.4), ('c', 0.4), ('d', 0.0)]
-        >>> dist['e'] = 4
-        >>> list(sorted(dist.items()))
-        [('a', 0.2), ('b', 0.4), ('c', 0.4), ('d', 0.0), ('e', 4)]
-        >>> empty = DiscreteDistribution()
-        >>> empty.normalize()
-        >>> empty
+
         {}
         """
         "*** Q0 1/2: YOUR CODE HERE ***"
@@ -94,6 +82,7 @@ class DiscreteDistribution(dict):
         # Otherwise, for every key in self.keys, divide the key value by the total to normalize the value.
         for key in self.keys():
             self[key] = self[key] / total
+        
 
 
     def sample(self):
@@ -414,9 +403,19 @@ class ParticleFilter(InferenceModule):
         such as when you need the return to be used to index a set, then use the
         operator: //  for integer division
         """
-        self.particles = []
-        "*** Q5A: YOUR CODE HERE ***"
-        
+
+        temp = []
+        n = self.numParticles
+        size = len(self.legalPositions)
+        while n > 0:
+            if n > size:
+                temp += self.legalPositions
+                n -= size
+            else:
+                temp += self.legalPositions[0:n]
+                n = 0
+        self.particles = temp
+
 
     def observeUpdate(self, observation, gameState):
         """
@@ -431,7 +430,25 @@ class ParticleFilter(InferenceModule):
         the DiscreteDistribution may be useful.
         """
         "*** Q6: YOUR CODE HERE ***"
-        
+
+        pacmanPosition = gameState.getPacmanPosition()
+        noisyDistance = observation
+        dist = DiscreteDistribution()
+
+        for particle in self.particles:
+            trueDistance = manhattanDistance(particle, pacmanPosition)
+            prob = busters.getObservationProbability(noisyDistance, trueDistance)
+            dist[particle] += prob
+
+        if dist.total() == 0:
+            self.initializeUniformly(gameState)
+
+        else:
+            # normalize dist before updating
+            dist.normalize()
+            # update the beliefs to equal the distribution
+            self.beliefs = dist
+
 
     def elapseTime(self, gameState):
         """
@@ -439,7 +456,7 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** Q7: YOUR CODE HERE ***"
-        
+
 
 
     def getBeliefDistribution(self):
@@ -449,6 +466,11 @@ class ParticleFilter(InferenceModule):
         essentially converts a list of particles into a belief distribution.
         """
         "*** Q5b: YOUR CODE HERE ***"
+        beliefs = util.Counter()
+        for particles in self.particles:
+            beliefs[particles] += 1.0
+        beliefs.normalize()
+        return beliefs
         
 
 
