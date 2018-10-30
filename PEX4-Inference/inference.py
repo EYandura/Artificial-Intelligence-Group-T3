@@ -2,7 +2,8 @@
 # CS471 PEX 4
 # YOUR NAME HERE
 #
-# DOCUMENTATION
+# DOCUMENTATION:
+#   ~ I talked through the logic of problem 2 and 3 with C1C Curran Brandt and C1C Dillon Browne.
 #
 ##############################
 
@@ -83,7 +84,16 @@ class DiscreteDistribution(dict):
         {}
         """
         "*** Q0 1/2: YOUR CODE HERE ***"
-        
+        # Find the sum of the values in the distribution, casting it as a float to normalize.
+        total = float(self.total())
+
+        # If the total is zero, return.
+        if total == 0:
+            return
+
+        # Otherwise, for every key in self.keys, divide the key value by the total to normalize the value.
+        for key in self.keys():
+            self[key] = self[key] / total
 
 
     def sample(self):
@@ -108,7 +118,32 @@ class DiscreteDistribution(dict):
         0.0
         """
         "*** Q0 2/2: YOUR CODE HERE ***"
-        
+        # If self.total is not 1, it needs to be normalized.
+        if self.total() != 1:
+            self.normalize()
+
+        # Use sorted() to sort self.items()
+        items = sorted(self.items())
+        distribution = []
+        values = []
+
+        # Add the second element of each item to distribution and the first element of each item to values.
+        for item in items:
+            distribution.append(item[1])
+            values.append(item[0])
+
+        # Pick a random value in the distribution.
+        value = random.random()
+
+        i = 0
+        total = distribution[0]
+        while value > total:
+            i += 1
+            total += distribution[i]
+
+        return values[i]
+
+
 
 
 class InferenceModule:
@@ -178,7 +213,24 @@ class InferenceModule:
         Return the probability P(noisyDistance | pacmanPosition, ghostPosition).
         """
         "*** Q1: YOUR CODE HERE ***"
-       
+        # Check if the ghost is in the jail position.
+        if ghostPosition == jailPosition:
+            # If the ghost is in the jail position, the distance returns None with probability 1.
+            if noisyDistance == None:
+                return 1.0
+            # Otherwise, everything else has a probability of 0.
+            else:
+                return 0.0
+
+        # If the ghost is not in the jail position and noisyDistance is 0, return 0.
+        if noisyDistance == None:
+            return 0.0
+
+        # Calculate the manhattan distance and calculate the probability using this and the noisy distance.
+        manDist = manhattanDistance(pacmanPosition, ghostPosition)
+        prob = busters.getObservationProbability(noisyDistance, manDist)
+
+        return prob
 
 
     def setGhostPosition(self, gameState, ghostPosition, index):
@@ -287,8 +339,25 @@ class ExactInference(InferenceModule):
         position is known.
         """
         "*** Q2: YOUR CODE HERE ***"
-        
-        
+        # Get the distribution, pacman's position, the jail position, and a list of all positions.
+        distribution = DiscreteDistribution()
+        pacPos = gameState.getPacmanPosition()
+        jailPos = self.getJailPosition()
+        allPositions = self.allPositions
+
+        # if observation == None:
+        #     distribution[self.getJailPosition()] = 1.0
+
+        for position in allPositions:
+            # Get the ObservationProb at the current position.
+            obsProb = self.getObservationProb(observation, pacPos, position, jailPos)
+
+            # Set the distribution at the current position.
+            distribution[position] = obsProb * self.beliefs[position]
+
+        # Reset the beliefs to the distribution.
+        self.beliefs = distribution
+
         "*** END YOUR CODE ***"
         self.beliefs.normalize()
 
@@ -302,7 +371,21 @@ class ExactInference(InferenceModule):
         current position is known using gameState.getPacmanPosition().
         """
         "*** Q3: YOUR CODE HERE ***"
-        
+        # Get the distribution, a list of all positions, and the list of new position distribution keys.
+        distribution = DiscreteDistribution()
+        allPositions = self.allPositions
+
+        for position in allPositions:
+            # Get the position distribution and probability for the current position.
+            posDistribution = self.getPositionDistribution(gameState, position)
+            probability = self.beliefs[position]
+
+            # Multiply each position to the probability to the new position distribution.
+            for newPos in posDistribution.keys():
+                distribution[newPos] += probability * posDistribution[newPos]
+
+        # Update the beliefs to reflect the distribution.
+        self.beliefs = distribution
 
     def getBeliefDistribution(self):
         return self.beliefs
