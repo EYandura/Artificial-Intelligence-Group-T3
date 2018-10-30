@@ -516,6 +516,7 @@ class JointParticleFilter(ParticleFilter):
         Resample the set of particles using the likelihood of the noisy
         observations.
         """
+
         observation = gameState.getNoisyGhostDistances()
         self.observeUpdate(observation, gameState)
 
