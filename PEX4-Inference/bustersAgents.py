@@ -150,4 +150,22 @@ class GreedyBustersAgent(BustersAgent):
              if livingGhosts[i+1]]
         "*** Q4 YOUR CODE HERE ***"
 
+        # get the ghost position of the target ghost
+        distance = 999999999
+        for dist in livingGhostPositionDistributions:
+            highestProbPosition = dist.argMax()
+            test_distance = self.distancer.getDistance(pacmanPosition, highestProbPosition)
+            if test_distance <= distance:
+                distance = test_distance
+                ghost_position = highestProbPosition
 
+        # choose the action that moves you closer to the target ghost
+        dist = 99999999
+        for each_action in legal:
+            successorPosition = Actions.getSuccessor(pacmanPosition, each_action)
+            test_distance = self.distancer.getDistance(successorPosition, ghost_position)
+            if test_distance <= dist:
+                dist = test_distance
+                chosen_action = each_action
+        return chosen_action
+        

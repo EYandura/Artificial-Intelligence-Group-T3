@@ -4,6 +4,7 @@
 #
 # DOCUMENTATION:
 #   ~ I talked through the logic of problem 2 and 3 with C1C Curran Brandt and C1C Dillon Browne.
+#   - Toni Giamo helped me find my errors in numbers 5a, 6 and 7 by walking me through pseudo code similar to the problem.
 #
 ##############################
 
@@ -64,13 +65,26 @@ class DiscreteDistribution(dict):
 
     def normalize(self):
         """
-        Normalize the distribution such that the total value of all keys sums
-        to 1. The ratio of values for all keys will remain the same. In the case
-        where the total value of the distribution is 0, do nothing.
+                Normalize the distribution such that the total value of all keys sums
+                to 1. The ratio of values for all keys will remain the same. In the case
+                where the total value of the distribution is 0, do nothing.
 
-
-        {}
-        """
+                >>> dist = DiscreteDistribution()
+                >>> dist['a'] = 1
+                >>> dist['b'] = 2
+                >>> dist['c'] = 2
+                >>> dist['d'] = 0
+                >>> dist.normalize()
+                >>> list(sorted(dist.items()))
+                [('a', 0.2), ('b', 0.4), ('c', 0.4), ('d', 0.0)]
+                >>> dist['e'] = 4
+                >>> list(sorted(dist.items()))
+                [('a', 0.2), ('b', 0.4), ('c', 0.4), ('d', 0.0), ('e', 4)]
+                >>> empty = DiscreteDistribution()
+                >>> empty.normalize()
+                >>> empty
+                {}
+                """
         "*** Q0 1/2: YOUR CODE HERE ***"
         # Find the sum of the values in the distribution, casting it as a float to normalize.
         total = float(self.total())
@@ -137,8 +151,9 @@ class DiscreteDistribution(dict):
 
 class InferenceModule:
     """
-    An inference module tracks a belief distribution over a ghost's location.
-    """
+        An inference module tracks a belief distribution over a ghost's location.
+        """
+
     ############################################
     # Useful methods for all inference modules #
     ############################################
@@ -168,7 +183,7 @@ class InferenceModule:
             dist[jail] = 1.0
             return dist
         pacmanSuccessorStates = game.Actions.getLegalNeighbors(pacmanPosition, \
-                gameState.getWalls())  # Positions Pacman can move to
+                                                               gameState.getWalls())  # Positions Pacman can move to
         if ghostPosition in pacmanSuccessorStates:  # Ghost could get caught
             mult = 1.0 / float(len(pacmanSuccessorStates))
             dist[jail] = mult
@@ -333,19 +348,24 @@ class ExactInference(InferenceModule):
         pacPos = gameState.getPacmanPosition()
         jailPos = self.getJailPosition()
         allPositions = self.allPositions
+        noisyDistance = observation
 
         for position in allPositions:
-            # Get the ObservationProb at the current position.
-            obsProb = self.getObservationProb(observation, pacPos, position, jailPos)
-
-            # Set the distribution at the current position.
-            distribution[position] = obsProb * self.beliefs[position]
+            if observation == None:
+                if (position == jailPos):
+                    self.beliefs[position] = 1
+                else:
+                    self.beliefs[position] = 0
+            elif position == jailPos:
+                self.beliefs[position] = 0
+            else:
+                obsProb = self.getObservationProb(noisyDistance, pacPos, position, jailPos)
+                self.beliefs[position] *= obsProb
 
         # Reset the beliefs to the distribution.
-        self.beliefs = distribution
+        self.beliefs.normalize()
 
         "*** END YOUR CODE ***"
-        self.beliefs.normalize()
 
     def elapseTime(self, gameState):
         """
@@ -400,18 +420,19 @@ class ParticleFilter(InferenceModule):
         such as when you need the return to be used to index a set, then use the
         operator: //  for integer division
         """
-
-        temp = []
-        n = self.numParticles
+        newParticles = []
+        numParticles = self.numParticles
         size = len(self.legalPositions)
-        while n > 0:
-            if n > size:
-                temp += self.legalPositions
-                n -= size
+        legalPos = self.legalPositions
+
+        while numParticles > 0:
+            if numParticles > size:
+                newParticles += legalPos
+                numParticles -= size
             else:
-                temp += self.legalPositions[0:n]
-                n = 0
-        self.particles = temp
+                newParticles += legalPos[0:numParticles]
+                numParticles = 0
+        self.particles = newParticles
 
 
     def observeUpdate(self, observation, gameState):
@@ -429,28 +450,22 @@ class ParticleFilter(InferenceModule):
         "*** Q6: YOUR CODE HERE ***"
 
         pacmanPosition = gameState.getPacmanPosition()
-        noisyDistance = observation
-        dist = DiscreteDistribution()
+        beliefDistribution = self.getBeliefDistribution()
         jailPos = self.getJailPosition()
+        newDistribution = DiscreteDistribution()
 
-        for particle in self.particles:
-            trueDistance = manhattanDistance(particle, pacmanPosition)
-            prob = self.getObservationProb(observation, pacmanPosition, particle, jailPos)
-            dist[particle] += prob
+        for location in self.legalPositions:
+            observationProbability = self.getObservationProb(observation, pacmanPosition, location, jailPos)
+            newDistribution[location] += observationProbability * beliefDistribution[location]
 
-        if dist.total() == 0:
+        if newDistribution.total() == 0:
             self.initializeUniformly(gameState)
-
         else:
-            # normalize dist before updating
-            dist.normalize()
-            # update the beliefs to equal the distribution
-            self.beliefs = dist
-
-            # Take a new sample for each particle.
-            for partIndex in range(self.numParticles):
-                sample = dist.sample()
-                self.particles[partIndex] = sample
+            # Take a new sample based on the dist.
+            samples = []
+            for particles in range(len(self.particles)):
+                samples.append(newDistribution.sample())
+            self.particles = samples
 
 
     def elapseTime(self, gameState):
@@ -459,7 +474,11 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** Q7: YOUR CODE HERE ***"
-
+        newParticles = []
+        for each_particle in self.particles:
+            newPosDist = self.getPositionDistribution(gameState, each_particle)
+            newParticles.append(newPosDist.sample())
+        self.particles = newParticles
 
 
     def getBeliefDistribution(self):
@@ -471,7 +490,7 @@ class ParticleFilter(InferenceModule):
         "*** Q5b: YOUR CODE HERE ***"
         beliefs = util.Counter()
         for particles in self.particles:
-            beliefs[particles] += 1.0
+            beliefs[particles] = beliefs[particles] + 1.0
         beliefs.normalize()
         return beliefs
         
