@@ -2,7 +2,17 @@
 # CS471 PEX 5
 # YOUR NAME HERE
 #
-# DOCUMENTATION
+# DOCUMENTATION:
+# C1C Dillon Browne helped explain the use of the array I named "visited" throughout the code and the addition of
+#   a recursive function in Problem 4.
+# The website https://lukesingham.com/whos-going-to-leave-next/ was used as an off project example to further
+#   research binary features that could be translated to the digit dataset.
+# I used code from CS210 to create the following code that helped create the visitor array for problem 4.
+#   array = []
+#   for x in range(10):
+#     array.append([])
+#     for y in range(10):
+#         array[x].append(0)
 #
 ##############################
 
@@ -72,6 +82,33 @@ def basicFeatureExtractorFace(datum):
                 features[(x,y)] = 0
     return features
 
+def updateVisited(datum, width, height, visited):
+    # Set the visited value of the current width and height ot 1.
+    visited[width][height] = 1
+
+    nextArray = []
+
+    # Append tuples to nextArray depending on the bounds of width and length.
+    if width != 0:
+        nextArray.append((width - 1, height))
+    if width != DIGIT_DATUM_WIDTH - 1:
+        nextArray.append((width + 1, height))
+    if height != 0:
+        nextArray.append((width, height - 1))
+    if height != DIGIT_DATUM_HEIGHT - 1:
+        nextArray.append((width, height + 1))
+
+    # Traverse each new tuple from nextArray.
+    for (widthIndex, heightIndex) in nextArray:
+        # If the pixel at width, height is 0 and the array index has not been visited.
+        if datum.getPixel(widthIndex, heightIndex) == 0 and visited[widthIndex][heightIndex] == 0:
+            # Set visited[width][height] to the value of updateVisited.
+            visited = updateVisited(datum, widthIndex, heightIndex, visited)
+
+    # Return the new value of the visited array.
+    return visited
+
+
 def enhancedFeatureExtractorDigit(datum):
     """
     Your feature extraction playground.
@@ -83,9 +120,37 @@ def enhancedFeatureExtractorDigit(datum):
 
     ##
     """
-    features =  basicFeatureExtractorDigit(datum)
+    features = basicFeatureExtractorDigit(datum)
 
-    "*** Q4 YOUR CODE HERE ***"
+    # Give featureIndex an initial value of 0.
+    featureIndex = 0
+
+    # Create an array of size DIGIT_DATUM_HEIGHT x DIGIT_DATUM_HEIGHT.
+    visited = []
+
+    for widthIndex in range(DIGIT_DATUM_WIDTH):
+        visited.append([])
+        for heightIndex in range(DIGIT_DATUM_HEIGHT):
+            # Set the visited status of each digit to 0.
+            visited[widthIndex].append(0)
+
+    # visited = [[0 for j in range(DIGIT_DATUM_HEIGHT)] for i in range(DIGIT_DATUM_WIDTH)]
+
+    # Traverse the newly created array.
+    for widthIndex in range(DIGIT_DATUM_WIDTH):
+        for heightIndex in range(DIGIT_DATUM_HEIGHT):
+
+            # If the pixel at width, height is 0 and the array index has not been visited.
+            if datum.getPixel(widthIndex, heightIndex) == 0 and visited[widthIndex][heightIndex] == 0:
+                # Set visited[width][height] to the value of updateVisited.
+                visited = updateVisited(datum, widthIndex, heightIndex, visited)
+
+                # Increment featureIndex.
+                featureIndex += 1
+
+    # Update the features array.
+    features[1] = 0
+    features[featureIndex] = 1
 
     return features
 

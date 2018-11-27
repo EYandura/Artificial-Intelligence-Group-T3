@@ -3,6 +3,7 @@
 # YOUR NAME HERE
 #
 # DOCUMENTATION
+# The code for problem 5 is modified from the code in Problem 1.
 #
 ##############################
 
@@ -57,7 +58,21 @@ class PerceptronClassifierPacman(PerceptronClassifier):
         for iteration in range(self.max_iterations):
             print("Starting iteration ", iteration, "...")
             for i in range(len(trainingData)):
-                "*** Q5 YOUR CODE HERE ***"
-                util.raiseNotDefined()
+
+                # Set the yPrime value to the guess from the classify function.
+                yPrime = self.classify([trainingData[i]])[0]
+
+                # score(f, y) = E( f * w^y )
+                # w^y  = w^y  + f
+                labels = self.legalLabels
+                trainingData = trainingData[i]
+
+                trainingLabel = trainingLabels[i]
+                # Compare y' to y or true label
+                if (yPrime != trainingLabel):
+                    # w^y  = w^y  + f
+                    self.weights -= trainingData[i][0][yPrime]
+                    # w^y' = w^y' - f
+                    self.weights += trainingData[i][0][trainingLabel]
 
 
