@@ -480,7 +480,6 @@ class ParticleFilter(InferenceModule):
             newParticles.append(newPosDist.sample())
         self.particles = newParticles
 
-
     def getBeliefDistribution(self):
         """
         Return the agent's current belief state, a distribution over ghost

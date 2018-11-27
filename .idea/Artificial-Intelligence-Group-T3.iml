@@ -7,8 +7,9 @@
       <sourceFolder url="file://$MODULE_DIR$/PEX2-MultiAgent" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/PEX3-Reinforcement" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/PEX4-Inference" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/PEX5-Classification" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.7 (venv)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.5.2 (C:\Python35\python.exe)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">
