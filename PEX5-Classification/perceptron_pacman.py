@@ -62,12 +62,8 @@ class PerceptronClassifierPacman(PerceptronClassifier):
                 # Set the yPrime value to the guess from the classify function.
                 yPrime = self.classify([trainingData[i]])[0]
 
-                # score(f, y) = E( f * w^y )
-                # w^y  = w^y  + f
-                labels = self.legalLabels
-                trainingData = trainingData[i]
-
                 trainingLabel = trainingLabels[i]
+
                 # Compare y' to y or true label
                 if (yPrime != trainingLabel):
                     # w^y  = w^y  + f
